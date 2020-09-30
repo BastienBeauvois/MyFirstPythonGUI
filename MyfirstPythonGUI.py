@@ -11,7 +11,12 @@ class MyFirstPythonGUI:
     #constants in the class
         self.FontSize = 22
         self.FontSize_btn = 36
-    
+        self.NumberOfDigits=4
+
+        self.click_count=0 #counter must be visible across the whole class, as used by 2 or more methods
+        self.pinNum=list("____")
+        self.buttonId =list("____")
+
         self.window=tk.Tk()
         self.window.title('MyFirstPythonGUI')
         self.window.geometry('{}x{}'.format(1400, 1000))
@@ -23,6 +28,7 @@ class MyFirstPythonGUI:
 
         self.PopulateTopFrame()
         self.PopulateBottomFrame()
+        self.PopulateKeyboard()
         self.PopulateKeyboard()
 
 
@@ -54,14 +60,13 @@ class MyFirstPythonGUI:
         self.top_label.grid(row=0, columnspan=1, sticky="nsew")
 
         #randomly generetae a sequence of 4 digits
-        NumberOfDigits=4
+        for i in range(self.NumberOfDigits):
+            self.pinNum[i] = str(randrange(1,10,1))
 
-        pin_str=''
-        for i in range(NumberOfDigits):
-            pin_str=pin_str + str(randrange(1,10,1))
+
 
         # create the widgets for the top frame
-        self.top_label2 = tk.Label(self.top_frame, text='Enter the following 4-digit code : '+ pin_str, bg="black", fg="white", height=4, font=("Courier", self.FontSize))
+        self.top_label2 = tk.Label(self.top_frame, text='Enter the following 4-digit code : '+ " ".join(self.pinNum), bg="black", fg="white", height=4, font=("Courier", self.FontSize))
         # layout the widgets in the top frame
         self.top_label2.grid(row=1, columnspan=1, sticky="nsew")
 
@@ -76,12 +81,16 @@ class MyFirstPythonGUI:
         # layout the widgets in the top frame
         self.btm_label1.grid(row=0, columnspan=1, sticky="nsew")
 
-        YourPin_str = '_ _ _ _'
-        
+
+        YourPin_str=" ".join(self.buttonId)
+
         # create the widgets for the top frame
         self.btm_label2 = tk.Label(self.btm_frame, text=YourPin_str, bg="black", fg="white", height=4, font=("Courier", self.FontSize))
         # layout the widgets in the top frame
         self.btm_label2.grid(row=1, columnspan=1, sticky="nsew")
+
+
+
 
 
     def SplitCentreFrame(self):
@@ -101,8 +110,18 @@ class MyFirstPythonGUI:
     def PopulateKeyboard(self):
 
         def handle_click(buttonId):
-        #    print("The button was clicked! event", str(event))
             print("The button was clicked!", str(buttonId))
+            self.buttonId[self.click_count] = str(buttonId)
+            self.click_count = (self.click_count+1) % 4
+            self.PopulateBottomFrame()
+
+            if self.click_count == 0:
+                if self.buttonId == self.pinNum:
+                    print ("SUCCESS")
+                else:
+                    print ("FAILURE")
+                    self.buttonId =list("____")
+
             return;
 
 
@@ -114,7 +133,7 @@ class MyFirstPythonGUI:
             for j in range(3):
                 frame = tk.Frame(master=self.ctr_mid, relief=tk.RAISED, borderwidth=1)
                 frame.grid(row=i, column=j, padx=5, pady=5)
-                button = tk.Button(master=frame, text=f"{Btn_id}", width=5, height=5, font=("Courier", self.FontSize_btn), command=partial(handle_click,Btn_id) )
+                button = tk.Button(master=frame, text=f"{Btn_id}", width=5, height=5, font=("Courier", self.FontSize_btn), command=partial(handle_click, Btn_id) )
                 button.pack(padx=5, pady=5) 
                 Btn_id = Btn_id + 1
 
